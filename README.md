@@ -4,6 +4,10 @@ You can see the demo version of this task
 
 # [DEMO](https://task-thimble.netlify.app/)
 
+# Skills
+
+Typescript, Material UI, React-hook-form, UUID, Lodash
+
 ## Available Scripts
 
 In the project directory, you can run:
