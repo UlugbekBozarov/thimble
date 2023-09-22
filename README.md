@@ -1,10 +1,8 @@
 # Thimble testing task
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+You can see the demo version of this task
 
-# Thimble testing task
-
-You can see the demo version of this [task](https://task-thimble.netlify.app/)
+# [DEMO](https://task-thimble.netlify.app/)
 
 ## Available Scripts
 
