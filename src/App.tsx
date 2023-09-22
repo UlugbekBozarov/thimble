@@ -1,68 +1,54 @@
 import { useContext, useMemo } from "react";
 import { FormProvider } from "react-hook-form";
+import { ThemeProvider, createTheme } from "@mui/material";
 
 import Layout from "./layout/Layout";
 import { Form, List } from "./sections";
 import { AppContext } from "./context";
-import { ThemeProvider, createTheme } from "@mui/material";
 
 function App() {
   const {
-    state: { formStore },
+    state: { mode, formStore },
   } = useContext<any>(AppContext);
 
   const muiTheme = useMemo(
     () =>
       createTheme({
         palette: {
-          // mode: "dark",
+          mode: mode,
         },
-        shape: { borderRadius: 8 },
+        shape: { borderRadius: 12 },
         components: {
-          MuiFormLabel: {
+          MuiTableHead: {
             styleOverrides: {
               root: {
-                "& .MuiFormLabel-asterisk": {
-                  color: "rgb(252, 7, 7)",
+                "& .MuiTableCell-root": {
+                  borderBottom: 0,
+                  background: mode === "light" ? "#e3e3e3" : "#121212",
                 },
-              },
-            },
-          },
-          MuiSelect: {
-            styleOverrides: {
-              select: {
-                paddingRight: "32px !important",
+                "& .MuiTableCell-root:first-child": {
+                  borderTopLeftRadius: "12px",
+                  borderBottomLeftRadius: "12px",
+                },
+                "& .MuiTableCell-root:last-child": {
+                  borderTopRightRadius: "12px",
+                  borderBottomRightRadius: "12px",
+                },
               },
             },
           },
           MuiTableCell: {
             styleOverrides: {
               root: {
-                fontSize: "12px",
-                padding: "10px",
+                "&.MuiTableCell-head": {
+                  fontWeight: 600,
+                },
               },
-              footer: {
-                color: "rgba(0, 0, 0, 0.87)",
-                fontWeight: "bold",
-              },
-            },
-          },
-          MuiPaginationItem: {
-            styleOverrides: {
-              root: {
-                fontSize: "0.875rem",
-                lineHeight: "0.875rem",
-              },
-            },
-          },
-          MuiInputBase: {
-            styleOverrides: {
-              root: {},
             },
           },
         },
       }),
-    []
+    [mode]
   );
 
   return (

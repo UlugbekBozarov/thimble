@@ -1,4 +1,5 @@
-export { default as ControlledCustomSwitch } from "./ControlledCustomSwitch/ControlledCustomSwitch";
-export { default as ControlledInput } from "./ControlledInput/ControlledInput";
-export { default as ControlledNumberInput } from "./ControlledNumberInput/ControlledNumberInput";
-export { default as ControlledSelect } from "./ControlledSelect/ControlledSelect";
+export { default as ControlledCheckbox } from "./form/ControlledCheckbox/ControlledCheckbox";
+export { default as ControlledInput } from "./form/ControlledInput/ControlledInput";
+export { default as ControlledNumberInput } from "./form/ControlledNumberInput/ControlledNumberInput";
+export { default as ControlledSelect } from "./form/ControlledSelect/ControlledSelect";
+export { default as LabeledModeSwitch } from "./form/LabeledModeSwitch/LabeledModeSwitch";

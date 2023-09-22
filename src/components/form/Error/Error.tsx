@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { FieldError } from "react-hook-form";
-import { Card, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 interface IError {
   error: FieldError | undefined;

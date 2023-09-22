@@ -1,39 +1,52 @@
 import { useContext } from "react";
-import { Box, Button, Divider, Grid, MenuItem } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Grid,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 
 import {
-  ControlledCustomSwitch,
+  ControlledCheckbox,
   ControlledInput,
   ControlledNumberInput,
   ControlledSelect,
+  LabeledModeSwitch,
 } from "../../components";
 import { AppContext } from "../../context";
 
 const Form = () => {
   const {
-    actions: { submitHandler },
+    state: { formStore, mode },
+    actions: { submitHandler, handleCancel, handleDelete, handleChangeMode },
   } = useContext<any>(AppContext);
+
+  const { watch } = formStore;
 
   return (
     <Box>
       <form onSubmit={submitHandler}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
+            <Typography fontWeight="bold" variant="h6">
+              Insert Row
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
             <ControlledInput
               label="Name"
               name="name"
               rules={{
-                required: {
-                  value: true,
-                  message: "Please enter name",
-                },
-                minLength: {
-                  value: 3,
-                  message: "Must be at least 3 characters",
-                },
-                maxLength: {
-                  value: 200,
-                  message: "No more than 200 characters",
+                validate: (value) => {
+                  if (value?.trim()?.length === 0) {
+                    return "Please enter name";
+                  } else if (value?.trim()?.length < 3) {
+                    return "Must be at least 3 characters";
+                  } else if (value?.trim()?.length > 200) {
+                    return "No more than 200 characters";
+                  } else return true;
                 },
               }}
               placeholder="Enter name"
@@ -64,10 +77,20 @@ const Form = () => {
             </ControlledSelect>
           </Grid>
           <Grid item xs={12}>
-            {/* <ControlledCustomSwitch label="Employment" name="employment" /> */}
+            <ControlledCheckbox
+              label="Employment"
+              name="employment"
+              labelPlacement="end"
+            />
           </Grid>
           <Grid item xs={12}>
-            <Button fullWidth type="submit" variant="contained" size="large">
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              color="success"
+              size="large"
+            >
               Insert
             </Button>
           </Grid>
@@ -75,10 +98,33 @@ const Form = () => {
             <Divider />
           </Grid>
           <Grid item xs={12}>
-            Switch
+            <LabeledModeSwitch
+              label="Mode"
+              checked={mode === "dark" ? true : false}
+              onChange={handleChangeMode}
+            />
           </Grid>
-          <Grid item xs={12}>
-            <Button fullWidth type="submit" variant="contained" size="large">
+          <Grid item xs={6}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="success"
+              size="large"
+              disabled={!watch("id")}
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="error"
+              size="large"
+              disabled={!watch("id")}
+              onClick={handleDelete}
+            >
               Delete
             </Button>
           </Grid>
