@@ -13,6 +13,49 @@ type IData = {
   employment: boolean;
 };
 
+interface ITableColumn {
+  type: "string" | "number";
+  key: string;
+  header?: string;
+  width: number;
+}
+
+interface ITableData {
+  availableColumns: Array<ITableColumn>;
+  extraColumns: Array<ITableColumn>;
+}
+
+const InitialTableData = {
+  availableColumns: [
+    {
+      type: "string",
+      key: "name",
+      header: "Name",
+      width: 400,
+    },
+    {
+      type: "number",
+      key: "age",
+      header: "Age",
+      width: 100,
+    },
+    {
+      type: "string",
+      key: "subscription",
+      header: "Subscription",
+      width: 250,
+    },
+    {
+      type: "string",
+      key: "employment",
+      header: "Employment",
+      width: 250,
+    },
+  ],
+  extraColumns: [],
+  totalWidth: 1084,
+};
+
 const useApp = () => {
   const formStore = useForm<IData>({
     defaultValues: {
@@ -24,6 +67,12 @@ const useApp = () => {
 
   const { watch, reset, handleSubmit, setFocus } = formStore;
 
+  const [columnsData, setColumnsData] = useState(
+    getItemLocalStorage("TableColumns") || InitialTableData
+  );
+  const [route, setRoute] = useState<"settings" | undefined>(
+    getItemLocalStorage("Route")
+  );
   const [mode, setMode] = useState<"light" | "dark">(
     getItemLocalStorage("Mode") || "light"
   );
@@ -148,8 +197,9 @@ const useApp = () => {
   });
 
   return {
-    state: { mode, formStore, filter, searchedData },
+    state: { route, mode, formStore, filter, searchedData },
     actions: {
+      setRoute,
       handleCancel,
       handleDelete,
       submitHandler,

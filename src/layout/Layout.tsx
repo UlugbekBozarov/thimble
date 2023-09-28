@@ -1,5 +1,8 @@
-import { FC, ReactNode } from "react";
+import { useContext } from "react";
 import { Box, Grid, Card, styled } from "@mui/material";
+
+import { Form, List, TableSettings } from "sections";
+import { AppContext } from "context";
 
 const StyledContent = styled(Box)(({ theme }) => ({
   width: "100vw",
@@ -9,26 +12,33 @@ const StyledContent = styled(Box)(({ theme }) => ({
   background: theme?.palette?.background?.default,
 }));
 
-interface ILayout {
-  form?: ReactNode;
-  list?: ReactNode;
-}
+const Layout = () => {
+  const {
+    state: { route },
+  } = useContext<any>(AppContext);
 
-const Layout: FC<ILayout> = ({ form, list }) => {
   return (
     <StyledContent>
       <Grid container spacing={4}>
         <Grid item xs={12} md={5} lg={4} xl={3.5}>
           <Card>
-            <Box padding="20px">{form}</Box>
+            <Box padding="20px">
+              <Form />
+            </Box>
           </Card>
         </Grid>
         <Grid item xs={12} md={7} lg={8} xl={8.5}>
-          <Card>
-            <Box height="calc(100vh - 40px)" padding="10px">
-              {list}
+          {route === "settings" ? (
+            <Box>
+              <TableSettings />
             </Box>
-          </Card>
+          ) : (
+            <Card>
+              <Box height="calc(100vh - 42px)" padding="10px">
+                <List />
+              </Box>
+            </Card>
+          )}
         </Grid>
       </Grid>
     </StyledContent>

@@ -3,7 +3,6 @@ import { FormProvider } from "react-hook-form";
 import { ThemeProvider, createTheme } from "@mui/material";
 
 import Layout from "./layout/Layout";
-import { Form, List } from "./sections";
 import { AppContext } from "./context";
 
 function App() {
@@ -15,10 +14,19 @@ function App() {
     () =>
       createTheme({
         palette: {
-          mode: mode,
+          mode: mode as "dark" | "light",
         },
         shape: { borderRadius: 12 },
         components: {
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                border: "1px solid #e9e9e9",
+                boxShadow: "none",
+                boxSizing: "border-box",
+              },
+            },
+          },
           MuiTableHead: {
             styleOverrides: {
               root: {
@@ -54,7 +62,7 @@ function App() {
   return (
     <ThemeProvider theme={muiTheme}>
       <FormProvider {...formStore}>
-        <Layout form={<Form />} list={<List />} />
+        <Layout />
       </FormProvider>
     </ThemeProvider>
   );

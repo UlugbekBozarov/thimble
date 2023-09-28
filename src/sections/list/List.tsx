@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
+  IconButton,
   Input,
   InputAdornment,
   Table,
@@ -13,15 +14,19 @@ import {
 } from "@mui/material";
 import { get } from "lodash";
 
-import { NoRows, Search } from "components/icons";
+import { NoRows, Search, Settings } from "components/icons";
 
 import { AppContext } from "../../context";
 import { StyledGridOverlay } from "./List.style";
+import { getItemLocalStorage, setItemLocalStorage } from "services/storage";
 
 const List = () => {
+  const [rout, setRout] = useState<string>(getItemLocalStorage("Route"));
+
   const {
     state: { formStore, searchedData, filter },
     actions: {
+      setRoute,
       handleChangeSearch,
       handleTableRowClick,
       handleChangePage,
@@ -33,7 +38,13 @@ const List = () => {
 
   return (
     <div>
-      <Box mt="10px" mb="20px" ml="20px">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        mt="10px"
+        mb="20px"
+        ml="20px"
+      >
         <Input
           placeholder="Search..."
           color="success"
@@ -44,8 +55,16 @@ const List = () => {
             </InputAdornment>
           }
         />
+        <IconButton
+          onClick={() => {
+            setRoute("settings");
+            setItemLocalStorage("Route", "settings");
+          }}
+        >
+          <Settings />
+        </IconButton>
       </Box>
-      <Box height="calc(100vh - 175px)" overflow="auto">
+      <Box height="calc(100vh - 180px)" overflow="auto">
         <Table
           stickyHeader
           sx={{ height: get(searchedData, "length", 0) ? undefined : "100%" }}
