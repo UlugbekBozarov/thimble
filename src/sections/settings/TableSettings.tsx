@@ -3,12 +3,13 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import { debounce, get, isEmpty } from "lodash";
 
-import { getItemLocalStorage, removeItemLocalStorage } from "services/storage";
+import { removeItemLocalStorage, setItemLocalStorage } from "services/storage";
 import { AppContext } from "context";
 
 import {
   ColumnContent,
   StableCardColumn,
+  StyledCustomColumn,
   StyledPlaceholder,
   Title,
 } from "./TableSettings.style";
@@ -26,48 +27,16 @@ interface ITableData {
   extraColumns: Array<ITableColumn>;
 }
 
-const InitialTableData = {
-  availableColumns: [
-    {
-      type: "string",
-      key: "name",
-      header: "Name",
-      width: 400,
-    },
-    {
-      type: "number",
-      key: "age",
-      header: "Age",
-      width: 100,
-    },
-    {
-      type: "string",
-      key: "subscription",
-      header: "Subscription",
-      width: 250,
-    },
-    {
-      type: "string",
-      key: "employment",
-      header: "Employment",
-      width: 250,
-    },
-  ],
-  extraColumns: [],
-  totalWidth: 1084,
-};
-
 const TableSettings = () => {
   const {
-    actions: { setRoute },
+    state: { columnsData },
+    actions: { setRoute, setColumnsData },
   } = useContext<any>(AppContext);
 
   const queryAttr = "data-rbd-drag-handle-draggable-id";
   const [placeholderProps, setPlaceholderProps] = useState<any>({});
 
-  const [data, setData] = useState<ITableData>(
-    getItemLocalStorage("TableColumns") || InitialTableData
-  );
+  const [data, setData] = useState<ITableData>(structuredClone(columnsData));
 
   const reorder = (
     list: Array<ITableColumn>,
@@ -138,7 +107,7 @@ const TableSettings = () => {
     let clientX: any =
       data[sourceDroppableId].slice(0, sourceIndex).reduce((total, curr) => {
         return total + curr.width + 10;
-      }, 0) + 94;
+      }, 0) + 84;
 
     setPlaceholderProps({
       clientHeight,
@@ -162,6 +131,8 @@ const TableSettings = () => {
     const { clientHeight } = draggedDOM;
     const destinationDroppableId: "availableColumns" | "extraColumns" =
       result?.destination?.droppableId;
+    const sourceDroppableId: "availableColumns" | "extraColumns" =
+      result?.source?.droppableId;
     const destinationIndex = result?.destination?.index;
     const sourceIndex = result?.source?.index;
 
@@ -170,19 +141,25 @@ const TableSettings = () => {
         .slice(
           0,
           destinationIndex +
-            (result?.destination?.index - result?.source?.index > 0 ? 1 : 0)
+            (result?.destination?.index - result?.source?.index > 0 &&
+            sourceDroppableId !== "extraColumns"
+              ? 1
+              : 0)
         )
         .reduce((total: number, curr: any, index) => {
-          if (index !== sourceIndex) {
+          if (index !== sourceIndex || sourceDroppableId === "extraColumns") {
             return total + curr.width + 10;
           } else return total;
-        }, 0) + 94;
+        }, 0) + 84;
 
     setPlaceholderProps({
       clientHeight,
-      clientWidth: data?.[destinationDroppableId]?.[sourceIndex]?.width,
+      clientWidth:
+        sourceDroppableId === "extraColumns"
+          ? 250
+          : data?.[destinationDroppableId]?.[sourceIndex]?.width,
       clientY: 10,
-      clientX: clientX,
+      clientX: clientX - (sourceDroppableId === "extraColumns" ? 5 : 0),
     });
   };
 
@@ -218,7 +195,7 @@ const TableSettings = () => {
         .slice(0, destinationIndex)
         .reduce((total: number, curr: any) => {
           return total + curr.width + 10;
-        }, 0) + 94;
+        }, 0) + 84;
     setPlaceholderProps({
       clientHeight,
       clientWidth:
@@ -281,6 +258,13 @@ const TableSettings = () => {
       });
     }, 100);
 
+  const submitHandler = () => {
+    setItemLocalStorage("TableColumns", data);
+    setColumnsData(data);
+    setRoute("");
+    removeItemLocalStorage("Route");
+  };
+
   return (
     <div>
       <Box mb="20px">
@@ -296,7 +280,12 @@ const TableSettings = () => {
           >
             Cancel
           </Button>
-          <Button size="large" variant="contained" color="success">
+          <Button
+            size="large"
+            variant="contained"
+            color="success"
+            onClick={submitHandler}
+          >
             Save
           </Button>
         </Stack>
@@ -319,7 +308,7 @@ const TableSettings = () => {
                         </Typography>
                       </Box>
                     </Box>
-                    <Box minHeight="100px" mb="20px" p="10px 20px">
+                    <Box minHeight="100px" mb="20px" p="10px 0px">
                       <Droppable
                         type="COLUMN"
                         direction="horizontal"
@@ -331,37 +320,23 @@ const TableSettings = () => {
                             height="100%"
                             sx={{ overflowX: "auto" }}
                             borderRadius="12px"
-                            padding="10px"
+                            padding="10px 0"
                           >
                             <Box
                               width={
                                 get(data, "totalWidth") &&
                                 `${get(data, "totalWidth")}px`
                               }
-                              minWidth={
-                                get(data, "totalWidth") &&
-                                `${get(data, "totalWidth")}px`
-                              }
+                              minWidth="100%"
                               paddingBottom="10px"
                               display="inline-flex"
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                             >
-                              <Box
-                                width="74px"
-                                minWidth="74px"
-                                height="100%"
-                                minHeight="50px"
-                                display="flex"
-                                alignItems="center"
-                                border={"1px solid #e9e9e9"}
-                                borderRadius="12px"
-                                pl="15px"
-                                sx={{ cursor: "no-drop" }}
-                              >
+                              <StyledCustomColumn>
                                 <Typography fontWeight="bold">№</Typography>
-                              </Box>
+                              </StyledCustomColumn>
                               {get(data, "availableColumns", [])?.map(
                                 (item, index) => (
                                   <Draggable
@@ -404,7 +379,7 @@ const TableSettings = () => {
                                 )
                               )}
                             </Box>
-                            {provided.placeholder}
+                            {/* {provided.placeholder} */}
                             {!isEmpty(placeholderProps) &&
                               snapshot.isDraggingOver && (
                                 <StyledPlaceholder

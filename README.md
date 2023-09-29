@@ -6,7 +6,7 @@ You can see the demo version of this task
 
 # Skills
 
-Typescript, Material UI, React-hook-form, UUID, Lodash
+Typescript, Material UI, React-hook-form, React-beautiful-dnd, UUID, Lodash
 
 ## Available Scripts
 

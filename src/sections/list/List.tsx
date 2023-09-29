@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useMemo } from "react";
 import {
   Box,
   IconButton,
@@ -15,16 +15,16 @@ import {
 import { get } from "lodash";
 
 import { NoRows, Search, Settings } from "components/icons";
+import { setItemLocalStorage } from "services/storage";
+import { ITableColumn } from "types/GlobalTypes";
 
 import { AppContext } from "../../context";
 import { StyledGridOverlay } from "./List.style";
-import { getItemLocalStorage, setItemLocalStorage } from "services/storage";
+import { CellText, HeaderText } from "components/table";
 
 const List = () => {
-  const [rout, setRout] = useState<string>(getItemLocalStorage("Route"));
-
   const {
-    state: { formStore, searchedData, filter },
+    state: { formStore, searchedData, filter, columnsData },
     actions: {
       setRoute,
       handleChangeSearch,
@@ -33,6 +33,11 @@ const List = () => {
       handleChangeRowsPerPage,
     },
   } = useContext<any>(AppContext);
+
+  const columns = useMemo(
+    () => get(columnsData, "availableColumns", []),
+    [columnsData]
+  );
 
   const { watch } = formStore;
 
@@ -72,10 +77,29 @@ const List = () => {
           <TableHead>
             <TableRow>
               <TableCell width="70px">№</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Age</TableCell>
-              <TableCell>Subscription</TableCell>
-              <TableCell>Employment</TableCell>
+              {columns?.map((column: ITableColumn, index: number) => (
+                <TableCell
+                  key={get(column, "key")}
+                  sx={{
+                    width:
+                      columns?.length - 1 === index
+                        ? "100%"
+                        : `${get(column, "width")}px`,
+                    maxWidth:
+                      columns?.length - 1 === index
+                        ? undefined
+                        : `${get(column, "width")}px`,
+                    minWidth: `${get(column, "width")}px`,
+                    "&:hover .new-header-style": {
+                      WebkitLineClamp: "inherit",
+                    },
+                  }}
+                >
+                  <HeaderText className="new-header-style">
+                    {get(column, "header")}
+                  </HeaderText>
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody sx={{ height: "100%" }}>
@@ -98,14 +122,24 @@ const List = () => {
                         index +
                         1}
                     </TableCell>
-                    <TableCell>{get(item, "name")}</TableCell>
-                    <TableCell>{get(item, "age")}</TableCell>
-                    <TableCell>{get(item, "subscription")}</TableCell>
-                    <TableCell>
-                      {get(item, "employment", false)
-                        ? "Employment"
-                        : "Unemployment"}
-                    </TableCell>
+                    {columns?.map((column: ITableColumn, index: number) => (
+                      <TableCell
+                        key={get(column, "key")}
+                        sx={{
+                          width:
+                            columns?.length - 1 === index
+                              ? "100%"
+                              : `${get(column, "width")}px`,
+                          maxWidth:
+                            columns?.length - 1 === index
+                              ? undefined
+                              : `${get(column, "width")}px`,
+                          minWidth: `${get(column, "width")}px`,
+                        }}
+                      >
+                        <CellText>{get(item, get(column, "key"))}</CellText>
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))
             ) : (

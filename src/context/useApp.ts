@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 import { get } from "lodash";
 
+import { ITableData } from "types/GlobalTypes";
+
 import { getItemLocalStorage, setItemLocalStorage } from "../services/storage";
 
 type IData = {
@@ -12,18 +14,6 @@ type IData = {
   subscription: String;
   employment: boolean;
 };
-
-interface ITableColumn {
-  type: "string" | "number";
-  key: string;
-  header?: string;
-  width: number;
-}
-
-interface ITableData {
-  availableColumns: Array<ITableColumn>;
-  extraColumns: Array<ITableColumn>;
-}
 
 const InitialTableData = {
   availableColumns: [
@@ -67,7 +57,7 @@ const useApp = () => {
 
   const { watch, reset, handleSubmit, setFocus } = formStore;
 
-  const [columnsData, setColumnsData] = useState(
+  const [columnsData, setColumnsData] = useState<ITableData>(
     getItemLocalStorage("TableColumns") || InitialTableData
   );
   const [route, setRoute] = useState<"settings" | undefined>(
@@ -197,12 +187,13 @@ const useApp = () => {
   });
 
   return {
-    state: { route, mode, formStore, filter, searchedData },
+    state: { columnsData, route, mode, formStore, filter, searchedData },
     actions: {
       setRoute,
       handleCancel,
       handleDelete,
       submitHandler,
+      setColumnsData,
       handleChangePage,
       handleChangeMode,
       handleChangeSearch,

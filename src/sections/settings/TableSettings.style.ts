@@ -1,5 +1,72 @@
 import { styled } from "@mui/material";
 
+export const StyledCustomColumn = styled("div")(({ theme }) => ({
+  width: "74px",
+  minWidth: "74px",
+  height: "100%",
+  minHeight: "50px",
+  display: "flex",
+  alignItems: "center",
+  border: "1px solid #e9e9e9",
+  borderRadius: "12px",
+  paddingLeft: "15px",
+  cursor: "no-drop",
+  background: theme?.palette?.background?.default,
+}));
+
+export const StyledColumns = styled("div", {
+  shouldForwardProp: (prop: string) => !["isDragging", "width"].includes(prop),
+})<any>(({ theme, isDragging, width }) => {
+  return {
+    width: width && `${width}px`,
+    position: "relative",
+    minWidth: "80px",
+    height: "100%",
+    minHeight: "50px",
+    display: "inline-flex",
+    border: "1px solid #e9e9e9",
+    borderRadius: "12px",
+    background: theme?.palette?.background?.default,
+    padding: "0px 8px",
+    paddingRight: "4px",
+    marginLeft: "10px",
+    boxShadow: isDragging && "0 0 12px 0 rgba(0, 0, 0, 0.08)",
+    "& .resizer": {
+      width: "5px",
+      height: "calc(100% - 24px)",
+      position: "absolute",
+      right: "-3px",
+      bottom: "12px",
+      cursor: "col-resize",
+      borderRadius: "4px",
+      background: "#999",
+      opacity: 0,
+      transition: "all 0.3s easy-in-out",
+    },
+    "& .close-icon-button": {
+      position: "absolute",
+      top: "calc(50% - 12px)",
+      right: "12px",
+      opacity: 0,
+      transition: "all 0.3s easy-in-out",
+      background: "#999",
+      "&:hover": {
+        background: "#999",
+      },
+    },
+    "&:hover": {
+      "& .resizer": {
+        opacity: 1,
+        transition: "all 0.3s easy-in-out",
+      },
+      "& .close-icon-button": {
+        opacity: 1,
+        transition: "all 0.3s easy-in-out",
+      },
+    },
+  };
+});
+
 export const Title = styled("h4")`
   word-break: break-word;
   user-select: none;
@@ -17,7 +84,7 @@ export const ColumnContent = styled("div")({
 });
 
 export const StableCardColumn = styled("div")<{ isDragging?: boolean }>(
-  ({ isDragging }) => ({
+  ({ theme, isDragging }) => ({
     minHeight: "50px",
     display: "flex",
     width: "250px",
@@ -25,10 +92,14 @@ export const StableCardColumn = styled("div")<{ isDragging?: boolean }>(
     alignContent: "center",
     border: "1px solid #e9e9e9",
     borderRadius: "12px",
-    background: "#e9e9e9",
+    // background: "#e9e9e9",
     padding: "0px 8px",
     paddingRight: "4px",
     boxShadow: `${isDragging ? "0 0 12px 0 rgba(0, 0, 0, 0.08)" : "none"}`,
+    background:
+      theme?.palette?.mode === "light"
+        ? theme?.palette?.grey?.[300]
+        : theme?.palette?.action?.hover,
   })
 );
 
